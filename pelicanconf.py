@@ -11,8 +11,9 @@ from stormwolves.scanner import Scanner
 from stormwolves.plugins.pages import pages
 from stormwolves.plugins.articles import articles
 from stormwolves.plugins.tipuesearch import tipue_search
+from stormwolves.plugins.pagehierarchy import page_hierarchy
 
-PLUGINS = [pages, articles, tipue_search]
+PLUGINS = [pages, articles, tipue_search, page_hierarchy]
 SCANNER = Scanner("content").scan()
 COPYRIGHT_LABEL = "&copy; {0} Stormwolves".format(datetime.datetime.now().year)
 
