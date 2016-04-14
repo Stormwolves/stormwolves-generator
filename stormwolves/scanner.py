@@ -77,6 +77,6 @@ class Scanner(object):
                 raise ScannerParseException('Parse error: file "{0}" has an invalid header: "{1}"'.format(
                     path, ':'.join(line)))
             data[line[0].strip().lower()] = line[1].strip()
-        data['content'] = markdown.markdown(content)
+        data['content'] = markdown.markdown(unicode(content, 'UTF-8'))
 
         return data
