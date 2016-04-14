@@ -8,7 +8,11 @@ def contentor(generator):
     Create slugs by file creation
     '''
     for article in generator.articles:
-        pass
+        if not getattr(article, "_summary", None):
+            article._summary = ""
+        article.formatted_date = article.date.strftime("%Y.%m.%d")
+        article.lead = article.content.split('</p>')[0].replace('<p>', '')
+        article.content_no_lead = "</p>".join(article.content.split('</p>')[1:])
 
 
 def register():
