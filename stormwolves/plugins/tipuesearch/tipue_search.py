@@ -13,6 +13,7 @@ from __future__ import unicode_literals
 
 import os.path
 import json
+import os
 from bs4 import BeautifulSoup
 from codecs import open
 try:
@@ -24,9 +25,7 @@ from pelican import signals
 
 
 class Tipue_Search_JSON_Generator(object):
-
     def __init__(self, context, settings, path, theme, output_path, *null):
-
         self.output_path = output_path
         self.context = context
         self.siteurl = settings.get('SITEURL')
@@ -34,9 +33,7 @@ class Tipue_Search_JSON_Generator(object):
         self.output_path = output_path
         self.json_nodes = []
 
-
     def create_json_node(self, page):
-
         if getattr(page, 'status', 'published') != 'published':
             return
 
@@ -52,18 +49,17 @@ class Tipue_Search_JSON_Generator(object):
         else:
             page_category = page.category.name
 
-        page_url = self.siteurl + '/' + page.url
+        page_url = self.siteurl + os.path.dirname(page.source_path.split("content")[-1]) + "/" +  page.url
+        print ">>>", page_url
 
         node = {'title': page_title,
                 'text': page_text,
                 'tags': page_category,
-                'url': page_url}
+                'url':  page_url}
 
         self.json_nodes.append(node)
 
-
     def create_tpage_node(self, srclink):
-
         srcfile = open(os.path.join(self.output_path, self.tpages[srclink]), encoding='utf-8')
         soup = BeautifulSoup(srcfile, 'html.parser')
         page_text = soup.get_text()
@@ -85,7 +81,6 @@ class Tipue_Search_JSON_Generator(object):
                 'url': page_url}
 
         self.json_nodes.append(node)
-
 
     def generate_output(self, writer):
         path = os.path.join(self.output_path, 'tipuesearch_content.json')
