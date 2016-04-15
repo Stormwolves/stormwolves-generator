@@ -13,12 +13,13 @@ from stormwolves.plugins.articles import articles
 from stormwolves.plugins.tipuesearch import tipue_search
 from stormwolves.plugins.pagehierarchy import page_hierarchy
 
-PLUGINS = [pages, articles, tipue_search, page_hierarchy]
+PLUGINS = [pages, articles, page_hierarchy, tipue_search]
 SCANNER = Scanner("content").scan()
 COPYRIGHT_LABEL = "&copy; {0} Stormwolves".format(datetime.datetime.now().year)
 
 AUTHOR = u'Test'
 SITENAME = u'Stormwolves Team'
+SITE_SLOGAN = u''
 SITEURL = ''
 THEME = 'stormwolves-theme'
 PATH = 'content'
@@ -38,6 +39,8 @@ DISPLAY_PAGES_ON_MENU = True
 
 ARTICLE_PATHS = ['news']
 ARTICLE_SAVE_AS = 'news/{slug}.html'
+ARTICLE_PICTURES = 'images'  # Relative to the ARTICLE_PATHS
+ARTICLE_DEFAULT_PICTURE = '__default_article_image.jpg'
 # Blogroll
 LINKS = (('Pelican', 'http://getpelican.com/'),
          ('Python.org', 'http://python.org/'),
