@@ -16,7 +16,7 @@ from stormwolves.plugins.photos import photos
 
 
 PLUGINS = [pages, articles, page_hierarchy, tipue_search, photos]
-SCANNER = Scanner("content").scan()
+
 COPYRIGHT_LABEL = "&copy; {0} Stormwolves".format(datetime.datetime.now().year)
 
 AUTHOR = u'Test'
@@ -60,5 +60,6 @@ DEFAULT_PAGINATION = 3
 PAGINATED_DIRECT_TEMPLATES = ['index', 'archives']
 DIRECT_TEMPLATES = ['index', 'tags', 'categories', 'authors', 'archives', 'search']
 
-# Uncomment following line if you want document-relative URLs when developing
-#RELATIVE_URLS = True
+SCANNER = Scanner("content")
+SCANNER.articles_paths = ARTICLE_PATHS
+SCANNER.scan()

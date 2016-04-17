@@ -32,6 +32,38 @@ class Scanner(object):
         self.slider = list()
         self.slider_type = 'slider'
 
+        self.articles = type("articles", (object,), {})
+        self.articles.total = 0
+
+        self.galleries = type("galleries", (object,), {})
+        self.galleries.total = 0
+
+        self.__articles_paths = list()
+
+    @property
+    def articles_paths(self):
+        '''
+        Get articles paths
+
+        :param paths:
+        :return:
+        '''
+        return self.__articles_paths
+
+    @articles_paths.setter
+    def articles_paths(self, paths):
+        '''
+        Set articles paths
+
+        :param paths:
+        :return:
+        '''
+        for path in paths:
+            if os.path.sep in path:
+                path = [pth for pth in path.split(os.path.sep) if pth]
+            if path not in self.__articles_paths:
+                self.__articles_paths.append(path)
+
     def scan(self):
         '''
         Scan for the articles.
@@ -58,6 +90,16 @@ class Scanner(object):
         data = self._parse_md_object(path)
         if data.get('type', '').lower() == self.slider_type:
             self.slider.append(data)
+
+        # Update counters
+        path = path.split(os.path.sep)
+        if not self.articles_paths or self.articles_paths[0] in path:
+            if path[path.index(self.articles_paths[0]):len(self.articles_paths) + 1] == self.articles_paths:
+                if data.get('gallery'):
+                    self.galleries.total += 1
+                else:
+                    self.articles.total += 1
+
 
     def _parse_md_object(self, path):
         '''
