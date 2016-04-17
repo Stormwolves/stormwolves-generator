@@ -12,8 +12,10 @@ from stormwolves.plugins.pages import pages
 from stormwolves.plugins.articles import articles
 from stormwolves.plugins.tipuesearch import tipue_search
 from stormwolves.plugins.pagehierarchy import page_hierarchy
+from stormwolves.plugins.photos import photos
 
-PLUGINS = [pages, articles, page_hierarchy, tipue_search]
+
+PLUGINS = [pages, articles, page_hierarchy, tipue_search, photos]
 SCANNER = Scanner("content").scan()
 COPYRIGHT_LABEL = "&copy; {0} Stormwolves".format(datetime.datetime.now().year)
 
@@ -28,6 +30,9 @@ MENUITEMS = (('Archives', '/archives.html'),)
 TIMEZONE = 'Europe/Berlin'
 
 DEFAULT_LANG = u'en'
+
+# Photos/Galleries
+PHOTO_LIBRARY = "content/news/media"
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
