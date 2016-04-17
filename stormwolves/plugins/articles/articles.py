@@ -98,11 +98,15 @@ def contentor(generator):
     Create slugs by file creation
     '''
     for article in generator.articles:
-        if not getattr(article, "_summary", None):
-            article._summary = ""
         article.formatted_date = article.date.strftime("%Y.%m.%d")
         article.lead = article.content.split('</p>')[0].replace('<p>', '')
         article.content_no_lead = "</p>".join(article.content.split('</p>')[1:])
+        if not getattr(article, "_summary", None):
+            article._summary = ""
+
+        if hasattr(article, 'gallery'):
+            article.template = 'gallery'
+            continue
 
         if not getattr(article, "noimage", None):  # noimage: True  -- disables the header image completely
             article.header_image_src = get_source_post_image(article)
