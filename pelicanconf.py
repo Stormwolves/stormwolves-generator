@@ -58,7 +58,7 @@ SOCIAL = (('You can add links in your config file', '#'),
 
 DEFAULT_PAGINATION = 3
 PAGINATED_DIRECT_TEMPLATES = ['index', 'archives']
-DIRECT_TEMPLATES = ['index', 'tags', 'categories', 'authors', 'archives', 'search']
+DIRECT_TEMPLATES = ['index', 'tags', 'categories', 'authors', 'archives', 'search', 'team']
 
 SCANNER = Scanner("content")
 SCANNER.articles_paths = ARTICLE_PATHS
