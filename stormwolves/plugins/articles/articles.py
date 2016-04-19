@@ -1,6 +1,9 @@
 import os
 import shutil
 from PIL import Image
+from pelican import signals, contents
+
+
 
 # TODO: All this stuff needs to be refactored as a class and have a better speed handling
 
@@ -113,9 +116,72 @@ def contentor(generator):
             save_image(article)
 
 
+class ArticleContentParser(object):
+    def __init__(self, content):
+        self.content = content
+
+    def parse(self):
+        if not isinstance(self.content, contents.Article):
+            return
+        self.render_vimeo_tags()
+
+    def _untag(self, data):
+        out = list()
+        for elm in data.split(">"):
+            elm = elm.split("<")[0]
+            if elm:
+                out.append(elm)
+
+        return ' '.join(out)
+
+    def _render_youtube_tag(self, tag):
+        '''
+        Render YouTube tag.
+
+        :param tag:
+        :return:
+        '''
+        template = """<div class="videocontainer">
+        <iframe src="//www.youtube.com/embed/{video_id}"
+                frameborder="0" class="videoport" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    </div>"""
+        return template.format(video_id=tag.split("{youtube}")[-1])
+
+    def _render_vimeo_tag(self, tag):
+        '''
+        Render Vimeo tag.
+
+        :param tag:
+        :return:
+        '''
+        template = """<div class="videocontainer">
+            <iframe src="//player.vimeo.com/video/{video_id}?portrait=0&color=333"
+                    frameborder="0" class="videoport" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        </div>"""
+        return template.format(video_id=tag.split("{vimeo}")[-1])
+
+    def render_vimeo_tags(self):
+        '''
+        Render video tags for Vimeo player.
+        :return:
+        '''
+        body = list()
+        for line in (self.content._content or '').split(os.linesep):
+            if line.find('{vimeo}') > -1:
+                line = self._render_vimeo_tag(self._untag(line))
+            elif line.find('{youtube}') > -1:
+                line = self._render_youtube_tag(self._untag(line))
+            body.append(line)
+        self.content._content = os.linesep.join(body)
+
+
+def article_content_parser(content):
+    ArticleContentParser(content).parse()
+
+
 def register():
     '''
     Registration.
     '''
-    from pelican import signals
+    signals.content_object_init.connect(article_content_parser)
     signals.article_generator_finalized.connect(contentor)
