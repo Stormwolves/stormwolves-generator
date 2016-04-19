@@ -50,7 +50,7 @@ class Tipue_Search_JSON_Generator(object):
             page_category = page.category.name
 
         page_url = self.siteurl + os.path.dirname(page.source_path.split("content")[-1]) + "/" +  page.url
-        print ">>>", page_url
+        #print ">>>", page_url
 
         node = {'title': page_title,
                 'text': page_text,
