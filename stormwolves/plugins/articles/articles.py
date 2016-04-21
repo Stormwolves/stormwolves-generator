@@ -44,17 +44,23 @@ def save_image(article):
     :param path:
     :return:
     '''
-    article.web_path = os.path.join(os.path.dirname(article.save_as),
-                                    article.settings.get('ARTICLE_PICTURES'),
-                                    os.path.basename(article.header_image_src))
-    header_image_save_as = os.path.join(get_output_path(article), article.web_path)
-    if not os.path.exists(article.header_image_src):
-        raise Exception('File "{0}" does not exists!'.format(article.header_image_src))
-    if not os.path.exists(header_image_save_as):
-        if not os.path.exists(os.path.dirname(header_image_save_as)):
-            os.makedirs(os.path.dirname(header_image_save_as))
-        shutil.copy(article.header_image_src, header_image_save_as)
-        make_header_image(header_image_save_as)
+    img_pth = os.path.join(os.path.dirname(article.source_path), article.settings.get('ARTICLE_PICTURES'))
+    images_to_copy = ([(False, os.path.join(img_pth, img),) for img in article.metadata.get('_embedded_images', list())] +
+                      [(True, article.header_image_src,)])
+
+    for crop, img_src in images_to_copy:
+        article.web_path = os.path.join(os.path.dirname(article.save_as),
+                                        article.settings.get('ARTICLE_PICTURES'),
+                                        os.path.basename(img_src))
+        img_save_as = os.path.join(get_output_path(article), article.web_path)
+        if not os.path.exists(img_src):
+            raise Exception('File "{0}" does not exists!'.format(img_src))
+        if not os.path.exists(img_save_as):
+            if not os.path.exists(os.path.dirname(img_save_as)):
+                os.makedirs(os.path.dirname(img_save_as))
+            shutil.copy(img_src, img_save_as)
+            if crop:
+                make_header_image(img_save_as)
 
 
 def get_source_post_image(article):
@@ -123,7 +129,7 @@ class ArticleContentParser(object):
     def parse(self):
         if not isinstance(self.content, contents.Article):
             return
-        self.render_vimeo_tags()
+        self.render_tags()
 
     def _untag(self, data):
         out = list()
@@ -160,7 +166,32 @@ class ArticleContentParser(object):
         </div>"""
         return template.format(video_id=tag.split("{vimeo}")[-1])
 
-    def render_vimeo_tags(self):
+    def _render_image_tag(self, tag):
+        '''
+        Render image tag.
+
+        :param tag:
+        :return:
+        '''
+        template = """<div class="article-image-container"><img src="{image_path}" class="article-image"/></div>"""
+        image_path = os.path.sep.join([self.content.settings['SITEURL'],
+                                      os.path.dirname(self.content.save_as),
+                                      tag.split("{image}")[-1]])
+        self._push_image(image_path)
+        return template.format(image_path=image_path)
+
+    def _push_image(self, path):
+        '''
+        Register source image for further processing.
+
+        :param path:
+        :return:
+        '''
+        if '_embedded_images' not in self.content.metadata:
+            self.content.metadata['_embedded_images'] = list()
+        self.content.metadata['_embedded_images'].append(os.path.basename(path))
+
+    def render_tags(self):
         '''
         Render video tags for Vimeo player.
         :return:
@@ -171,6 +202,8 @@ class ArticleContentParser(object):
                 line = self._render_vimeo_tag(self._untag(line))
             elif line.find('{youtube}') > -1:
                 line = self._render_youtube_tag(self._untag(line))
+            elif line.find('{image}') > -1:
+                line = self._render_image_tag(self._untag(line))
             body.append(line)
         self.content._content = os.linesep.join(body)
 
