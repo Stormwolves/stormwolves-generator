@@ -71,7 +71,7 @@ class Scanner(object):
         :return:
         '''
         self.slider = list()
-        for r_path, dirs, files in os.walk(self._path):
+        for r_path, dirs, files in os.walk(str(self._path)):
             for obj in files:
                 self.categorize(os.path.join(r_path, obj))
 
